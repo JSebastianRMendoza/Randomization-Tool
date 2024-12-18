@@ -1,2 +1,2 @@
 # Randomization-Tool
- R script for randomizing data sets
+ R script for randomizing data sets.
