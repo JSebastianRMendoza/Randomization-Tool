@@ -1,0 +1,183 @@
+---
+title: "Randomization - R Script "
+author: "J.Sebastian R.Mendoza"
+date: "2024.10.12"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+---
+
+<img src="ECRC-Logo.png"
+     alt="Markdown Monster icon"
+     style="float: right; margin-right: 5px" />
+
+<pre>
+
+
+
+
+
+</pre>
+
+# Imput_0
+```{r input,eval=TRUE, eco= FALSE}
+#* save the Document t: (/Randomization-Tool/Dataset to randomize/)
+#* get the working directory
+getwd()
+
+#* set the working directory
+#> setwd("~/ ______ /Randomization-Tool")
+
+```
+
+# Installation of packages
+
+```{r data_set,eval=TRUE, eco= FALSE}
+
+#* Installation of the required packages, if these are not yet installed. ----
+##* detect the used packaged: (just if nessesa) ----
+#>l_1 <- devtools::session_info()
+#>df_1 <-as.data.frame(l_1[["packages"]])
+#>used.packages <- na.omit(
+#>   ifelse( 
+#>    df_1[,"attached"] == TRUE
+#>    ,df_1[,"package"],
+#>    NA)
+#>)
+start.time <- Sys.time() ####* Measuring function time execution
+
+##* Install and download the packages ----
+used.packages <- 
+  c(
+    "googlesheets4"
+    ,"tidyverse"
+    ,"pdftools"
+    ,"tesseract"
+    ,"openxlsx"
+    ,"vtable"
+  )
+
+ipkgs <- 
+  rownames(installed.packages()) 
+npkgs <- 
+  setdiff(used.packages, ipkgs)
+if (length(npkgs) > 0) install.packages(npkgs) 
+for(i._ in used.packages) print(sprintf("Package %s, version=%s", i._, packageVersion(pkg = i._)))
+
+for(i._ in used.packages){
+  library(i._, character.only = TRUE)
+}
+###* Validation of results:
+#>[1] "Package googlesheets4, version=1.1.1"
+#>[1] "Package tidyverse, version=2.0.0"
+#>[1] "Package pdftools, version=3.4.1"
+#>[1] "Package tesseract, version=5.2.2"
+
+version[['version.string']] 
+
+###* Validation of results:
+#>[1] "R version 4.4.1 (2024-06-14 ucrt)"
+
+```
+
+# Loading the Dataset:
+
+```{r X,eval=TRUE, eco= TRUE}
+
+path_dt <- "Dataset to randomize/"
+path_rnd <- "randomized Dataset/"
+
+files_to_rnd <- 
+  list.files(
+    path_dt
+    ,pattern = ".xlsx"
+    )
+
+path_files <- 
+  paste(
+    path_dt
+    ,""
+    ,files_to_rnd
+    ,sep = ""
+    )
+
+list_dt <- list()
+for (i._ in 1:length(path_files)) {
+  list_dt[[i._]]<- 
+    assign( # Read and store data frames as: xx
+      paste0("dt_", i._) 
+      ,as.data.frame(
+        read.xlsx(
+          path_files[i._]
+          )
+        )
+      )
+}
+
+```
+
+# Randomization all variables
+```{r input,eval=TRUE, eco= FALSE}
+# select the variables to randomize
+
+list_rnd <- list()
+for (i._ in 1:length(list_dt)) {
+  Var_to_rand <- 
+    c(
+      1:ncol(list_dt[[i._]])
+      )
+  df <- list_dt[[i._]]
+  for (ii._ in 1:length(Var_to_rand)){
+    df[,Var_to_rand[ii._]] <-
+      sample(
+        df[,Var_to_rand[ii._]]
+        , replace = FALSE
+        )
+  }
+  list_rnd[[i._]] <- df
+}
+
+
+```
+
+# Test
+
+```{r X,eval=TRUE, eco= TRUE}
+
+view(list_dt[[i._]])
+view(list_rnd[[i._]])
+
+summary(list_dt[[i._]])
+summary(list_rnd[[i._]])
+
+st(
+  list_dt[[i._]]
+  ,title = "Summary Statistics"
+  )
+st(
+  list_rnd[[i._]]
+  ,title = "Summary randomized Statistics"
+  )
+
+```
+
+# export
+
+```{r X,eval=TRUE, eco= TRUE}
+
+for (i._ in 1:length(list_rnd)) {
+  write.xlsx(
+    list_rnd[[i._]] 
+    ,paste0(
+      path_rnd
+      ,"randomized_"
+      ,files_to_rnd[i._]
+      ,collapse=""
+      )
+  )
+}
+```
+
