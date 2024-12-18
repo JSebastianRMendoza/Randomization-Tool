@@ -1,7 +1,7 @@
 ---
 title: "Randomization - R Script "
 author: "J.Sebastian R.Mendoza"
-date: "2024.10.12"
+date: "2024.10.12 - 2024.12.18"
 output:
   html_document:
     toc: true
@@ -10,52 +10,33 @@ output:
       smooth_scroll: true
 ---
 
-<img src="ECRC-Logo.png"
+<img src="Logo.png"
      alt="Markdown Monster icon"
-     style="float: right; margin-right: 5px" />
+     style="float: right; margin-right: 4px" />
 
 <pre>
-
-
-
-
-
+Version 1.0
 </pre>
-
-# Imput_0
-```{r input,eval=TRUE, eco= FALSE}
-#* save the Document t: (/Randomization-Tool/Dataset to randomize/)
-#* get the working directory
-getwd()
-
-#* set the working directory
-#> setwd("~/ ______ /Randomization-Tool")
-
-```
 
 # Installation of packages
 
-```{r data_set,eval=TRUE, eco= FALSE}
+```{r IoP,eval=TRUE, eco= FALSE}
+
+#* save the Document t: "/Randomization-Tool/Dataset to randomize/" ----
+#* get the actual working directory
+
+#> getwd()
+
+#* set the working directory in the Path of the R-project ----
+
+#> setwd("~/ ______ /Randomization-Tool")
 
 #* Installation of the required packages, if these are not yet installed. ----
-##* detect the used packaged: (just if nessesa) ----
-#>l_1 <- devtools::session_info()
-#>df_1 <-as.data.frame(l_1[["packages"]])
-#>used.packages <- na.omit(
-#>   ifelse( 
-#>    df_1[,"attached"] == TRUE
-#>    ,df_1[,"package"],
-#>    NA)
-#>)
-start.time <- Sys.time() ####* Measuring function time execution
 
-##* Install and download the packages ----
+##* Installation and download the packages ----
 used.packages <- 
   c(
-    "googlesheets4"
-    ,"tidyverse"
-    ,"pdftools"
-    ,"tesseract"
+    "readxl"
     ,"openxlsx"
     ,"vtable"
   )
@@ -70,11 +51,13 @@ for(i._ in used.packages) print(sprintf("Package %s, version=%s", i._, packageVe
 for(i._ in used.packages){
   library(i._, character.only = TRUE)
 }
-###* Validation of results:
+###* Validation of results: ----
 #>[1] "Package googlesheets4, version=1.1.1"
 #>[1] "Package tidyverse, version=2.0.0"
 #>[1] "Package pdftools, version=3.4.1"
 #>[1] "Package tesseract, version=5.2.2"
+
+#* Verification of the R verstion ----
 
 version[['version.string']] 
 
@@ -83,18 +66,23 @@ version[['version.string']]
 
 ```
 
-# Loading the Dataset:
+# Loading of datasets:
 
-```{r X,eval=TRUE, eco= TRUE}
+```{r LoD,eval=TRUE, eco= TRUE}
+#* vector of the required folders
 
-path_dt <- "Dataset to randomize/"
-path_rnd <- "randomized Dataset/"
+path_dt <- "dataset to randomize/"
+path_rnd <- "randomized dataset/"
+
+#* vector of files to randomize
 
 files_to_rnd <- 
   list.files(
     path_dt
     ,pattern = ".xlsx"
     )
+
+#* vector with the path of the files
 
 path_files <- 
   paste(
@@ -103,6 +91,7 @@ path_files <-
     ,files_to_rnd
     ,sep = ""
     )
+#* List with the respective data frames
 
 list_dt <- list()
 for (i._ in 1:length(path_files)) {
@@ -110,7 +99,7 @@ for (i._ in 1:length(path_files)) {
     assign( # Read and store data frames as: xx
       paste0("dt_", i._) 
       ,as.data.frame(
-        read.xlsx(
+        read_excel(
           path_files[i._]
           )
         )
@@ -119,9 +108,9 @@ for (i._ in 1:length(path_files)) {
 
 ```
 
-# Randomization all variables
-```{r input,eval=TRUE, eco= FALSE}
-# select the variables to randomize
+# Randomization (for this case all variables)
+```{r RaV,eval=TRUE, eco= FALSE}
+# selection of the variables to randomize (in this case all) and randomization
 
 list_rnd <- list()
 for (i._ in 1:length(list_dt)) {
@@ -145,10 +134,10 @@ for (i._ in 1:length(list_dt)) {
 
 # Test
 
-```{r X,eval=TRUE, eco= TRUE}
+```{r Test,eval=TRUE, eco= TRUE}
 
-view(list_dt[[i._]])
-view(list_rnd[[i._]])
+View(list_dt[[i._]])
+View(list_rnd[[i._]])
 
 summary(list_dt[[i._]])
 summary(list_rnd[[i._]])
@@ -166,7 +155,9 @@ st(
 
 # export
 
-```{r X,eval=TRUE, eco= TRUE}
+```{r export,eval=TRUE, eco= TRUE}
+
+# export of the randomized data
 
 for (i._ in 1:length(list_rnd)) {
   write.xlsx(
